@@ -4,10 +4,9 @@ import { View, Text, FlatList, StyleSheet, SafeAreaView, TouchableOpacity } from
 import { getTasks } from '../app/api';
 import io from 'socket.io-client';
 
-// Reemplaza con la dirección IP de tu máquina de desarrollo
-const socket = io('http://192.168.0.107:5000');
+const socket = io('http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
 
-const TaskList = ({ navigation }) => {
+const TaskList = ({ navigation, route }) => {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
@@ -37,6 +36,12 @@ const TaskList = ({ navigation }) => {
       socket.off('deleteTask');
     };
   }, []);
+
+  useEffect(() => {
+    if (route.params?.refresh) {
+      fetchTasks();
+    }
+  }, [route.params?.refresh]);
 
   const fetchTasks = async () => {
     try {

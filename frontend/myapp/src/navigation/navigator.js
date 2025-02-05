@@ -29,7 +29,6 @@ export default function Navigator() {
       <Stack.Navigator initialRouteName="MainTabs" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="TaskDetail" component={TaskDetailScreen} options={{ title: 'Detalles de la Tarea' }} />
-   
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -38,6 +37,6 @@ export default function Navigator() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "rgb(248, 12, 12)",
+    backgroundColor: '#fff',
   },
 });

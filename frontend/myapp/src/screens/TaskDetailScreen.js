@@ -1,5 +1,5 @@
 // filepath: /c:/Users/Eduardo/Documents/GitHub/TodoApp/frontend/myapp/src/screens/TaskDetailScreen.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { updateTask, deleteTask } from '../app/api';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -16,13 +16,23 @@ const TaskDetailScreen = ({ route, navigation }) => {
   const [dueDate, setDueDate] = useState(new Date(task.due_date));
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
+  useEffect(() => {
+    // Conectar al socket cuando el componente se monta
+    socket.connect();
+
+    // Desconectar del socket cuando el componente se desmonta
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   const handleUpdateTask = async () => {
     try {
       const updatedTask = { title, description, completed, due_date: dueDate.toISOString() };
       await updateTask(task.id, updatedTask);
       socket.emit('updateTask', { id: task.id, ...updatedTask });
       Alert.alert('Tarea actualizada', 'La tarea ha sido actualizada exitosamente');
-      navigation.goBack();
+      navigation.navigate('MainTabs', { screen: 'Lista de Tareas', params: { refresh: true } });
     } catch (error) {
       console.error('Error updating task:', error);
       Alert.alert('Error', 'Hubo un problema al actualizar la tarea');
@@ -34,7 +44,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
       await deleteTask(task.id);
       socket.emit('deleteTask', { id: task.id });
       Alert.alert('Tarea eliminada', 'La tarea ha sido eliminada exitosamente');
-      navigation.goBack();
+      navigation.navigate('MainTabs', { screen: 'Lista de Tareas', params: { refresh: true } });
     } catch (error) {
       console.error('Error deleting task:', error);
       Alert.alert('Error', 'Hubo un problema al eliminar la tarea');
