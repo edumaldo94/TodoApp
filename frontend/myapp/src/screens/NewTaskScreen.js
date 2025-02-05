@@ -38,7 +38,7 @@ const NewTaskScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-       <StatusBar barStyle="light" />
+     
       <Text style={styles.text}>Nueva Tarea</Text>
       <TextInput
         style={styles.input}

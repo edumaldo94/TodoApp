@@ -1,6 +1,6 @@
 // filepath: /c:/Users/Eduardo/Documents/GitHub/TodoApp/frontend/myapp/src/screens/TaskDetailScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, SafeAreaView, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, SafeAreaView, Alert, Modal, TouchableOpacity } from 'react-native';
 import { updateTask, deleteTask } from '../app/api';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
@@ -15,6 +15,8 @@ const TaskDetailScreen = ({ route, navigation }) => {
   const [completed, setCompleted] = useState(task.completed);
   const [dueDate, setDueDate] = useState(new Date(task.due_date));
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isUpdateModalVisible, setUpdateModalVisibility] = useState(false);
+  const [isDeleteModalVisible, setDeleteModalVisibility] = useState(false);
 
   useEffect(() => {
     // Conectar al socket cuando el componente se monta
@@ -32,7 +34,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
       await updateTask(task.id, updatedTask);
       socket.emit('updateTask', { id: task.id, ...updatedTask });
       Alert.alert('Tarea actualizada', 'La tarea ha sido actualizada exitosamente');
-      navigation.navigate('MainTabs', { screen: 'Lista de Tareas', params: { refresh: true } });
+      navigation.navigate('MainTabs', { screen: 'TaskList', params: { refresh: true } });
     } catch (error) {
       console.error('Error updating task:', error);
       Alert.alert('Error', 'Hubo un problema al actualizar la tarea');
@@ -44,7 +46,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
       await deleteTask(task.id);
       socket.emit('deleteTask', { id: task.id });
       Alert.alert('Tarea eliminada', 'La tarea ha sido eliminada exitosamente');
-      navigation.navigate('MainTabs', { screen: 'Lista de Tareas', params: { refresh: true } });
+      navigation.navigate('MainTabs', { screen: 'TaskList', params: { refresh: true } });
     } catch (error) {
       console.error('Error deleting task:', error);
       Alert.alert('Error', 'Hubo un problema al eliminar la tarea');
@@ -92,10 +94,87 @@ const TaskDetailScreen = ({ route, navigation }) => {
       </Text>
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}>Completada:</Text>
-        <Button title={completed ? "Sí" : "No"} onPress={() => setCompleted(!completed)} />
+        <TouchableOpacity
+          style={[styles.completedButton, completed ? styles.completedYes : styles.completedNo]}
+          onPress={() => setCompleted(!completed)}
+        >
+          <Text style={styles.completedButtonText}>{completed ? "Sí" : "No"}</Text>
+        </TouchableOpacity>
       </View>
-      <Button title="Actualizar Tarea" onPress={handleUpdateTask} />
-      <Button title="Eliminar Tarea" onPress={handleDeleteTask} color="red" />
+      <TouchableOpacity
+        style={[styles.buttonActualizar, styles.buttonUpdateAc]}
+        onPress={() => setUpdateModalVisibility(true)}
+      >
+        <Text style={styles.textStyle}>Actualizar Tarea</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.buttonBorrar, styles.buttonDeleteBr]}
+        onPress={() => setDeleteModalVisibility(true)}
+      >
+        <Text style={styles.textStyle}>Eliminar Tarea</Text>
+      </TouchableOpacity>
+
+      {/* Modal de Confirmación de Actualización */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isUpdateModalVisible}
+        onRequestClose={() => setUpdateModalVisibility(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>¿Deseas actualizar esta tarea?</Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setUpdateModalVisibility(false)}
+              >
+                <Text style={styles.textStyle}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonUpdate]}
+                onPress={() => {
+                  setUpdateModalVisibility(false);
+                  handleUpdateTask();
+                }}
+              >
+                <Text style={styles.textStyle}>Actualizar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal de Confirmación de Eliminación */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isDeleteModalVisible}
+        onRequestClose={() => setDeleteModalVisibility(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>¿Deseas eliminar esta tarea?</Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setDeleteModalVisibility(false)}
+              >
+                <Text style={styles.textStyle}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonDelete]}
+                onPress={() => {
+                  setDeleteModalVisibility(false);
+                  handleDeleteTask();
+                }}
+              >
+                <Text style={styles.textStyle}>Eliminar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -106,6 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: '#f8f9fa',
   },
   text: {
     fontSize: 18,
@@ -142,6 +222,97 @@ const styles = StyleSheet.create({
   },
   label: {
     marginRight: 10,
+  },
+  completedButton: {
+    padding: 10,
+    borderRadius: 5,
+  },
+  completedYes: {
+    backgroundColor: '#4CAF50', // Verde para "Sí"
+  },
+  completedNo: {
+    backgroundColor: '#f44336', // Rojo para "No"
+  },
+  completedButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  buttonActualizar: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginVertical: 10,
+    width: '50%',
+    alignItems: 'center',
+  },
+  buttonUpdateAc: {
+    backgroundColor: '#4CAF50', // Verde para actualizar
+  },
+  buttonBorrar: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginVertical: 10,
+    width: '50%',
+    alignItems: 'center',
+  },
+  buttonDeleteBr: {
+    backgroundColor: '#f44336', // Rojo para eliminar
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginVertical: 10,
+    width: '40%',
+    alignItems: 'center',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  buttonUpdate: {
+    backgroundColor: '#4CAF50', // Verde para actualizar
+  },
+  buttonDelete: {
+    backgroundColor: '#f44336', // Rojo para eliminar
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.87)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
   },
 });
 

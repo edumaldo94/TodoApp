@@ -1,8 +1,7 @@
-// filepath: /C:/Users/Eduardo/Documents/GitHub/TodoApp/backend/app.js
+// filepath: /c:/Users/Eduardo/Documents/GitHub/TodoApp/backend/app.js
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
-const socketIo = require('socket.io');
 const tasksRoutes = require('./src/routes/tasks');
 const { init } = require('./socket');
 
@@ -31,9 +30,11 @@ io.on('connection', (socket) => {
   });
 });
 
-// Iniciar el servidor
-server.listen(PORT, () => {
-  console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
-});
+// Iniciar el servidor solo si no está en modo de prueba
+if (process.env.NODE_ENV !== 'test') {
+  server.listen(PORT, () => {
+    console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+  });
+}
 
-module.exports = { app, io };
+module.exports = { app, server };
