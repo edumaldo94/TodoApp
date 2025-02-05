@@ -5,6 +5,7 @@ const connection = mysql.createConnection({
     user: 'root',           // Usuario de MySQL
     password: '',           // Contraseña de MySQL (vacía por defecto en XAMPP)
     database: 'todoapp'     // Nombre de la base de datos
+    
 });
 
 connection.connect((err) => {

@@ -1,21 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
-import TaskList from './src/screens/TaskList'; // Ajusta la ruta según tu estructura
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import Navigator from './src/navigation/navigator';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <TaskList /> {/* Renderiza el componente TaskList */}
-      <StatusBar style="auto" />
-    </View>
-  );
+  return <Navigator />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
