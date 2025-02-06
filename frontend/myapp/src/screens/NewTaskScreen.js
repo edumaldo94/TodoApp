@@ -16,7 +16,8 @@ const NewTaskScreen = ({ navigation }) => {
       const formattedDate = moment(date).tz('America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss');
       await addTask({ title, description, due_date: formattedDate });
       Alert.alert('Tarea añadida', 'La tarea ha sido añadida exitosamente');
-      navigation.navigate('Lista de Tareas'); // Navegar a la pantalla de lista de tareas
+      //navigation.navigate('Lista de Tareas'); // Navegar a la pantalla de lista de tareas
+      navigation.navigate('MainTabs', { screen: 'TaskList', params: { refresh: true } });
     } catch (error) {
       console.error('Error adding task:', error);
       Alert.alert('Error', 'Hubo un problema al añadir la tarea');
