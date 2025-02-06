@@ -7,10 +7,11 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "predeploy": "npx expo export:web",
+    "deploy": "gh-pages -d web-build"
   },
   "dependencies": {
-    "@expo/cli": "^0.22.12",
     "@expo/metro-runtime": "~4.0.1",
     "@react-native-community/datetimepicker": "8.2.0",
     "@react-native-picker/picker": "2.9.0",
@@ -18,11 +19,14 @@
     "@react-navigation/material-top-tabs": "^7.1.0",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/native-stack": "^7.2.0",
+    "asn1.js": "^5.4.1",
     "axios": "^1.7.9",
-    "expo": "~52.0.23",
-    "expo-cli": "^6.3.10",
+    "browserify-sign": "^4.2.3",
+    "crypto-browserify": "^3.12.1",
+    "expo": "~52.0.0",
     "expo-status-bar": "~2.0.1",
     "moment-timezone": "^0.5.47",
+    "process": "^0.11.10",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.6",
@@ -30,16 +34,21 @@
     "react-native-datepicker": "^1.7.2",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-modal-datetime-picker": "^18.0.0",
+    "react-native-pager-view": "^6.7.0",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
     "react-native-tab-view": "^4.0.5",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "stream-browserify": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2"
+    "@babel/core": "^7.25.2",
+    "@expo/webpack-config": "^19.0.1",
+    "gh-pages": "^6.3.0"
   },
+  "homepage": "https://edumaldo94.github.io/TodoApp",
   "private": true
 }

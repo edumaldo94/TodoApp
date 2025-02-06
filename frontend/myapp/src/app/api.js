@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
- baseURL: 'http://192.168.0.107:5000/api'
+ baseURL: 'https://192.168.0.107:5000/api'
 });
 
 export const getTasks = () => api.get('/tasks');
