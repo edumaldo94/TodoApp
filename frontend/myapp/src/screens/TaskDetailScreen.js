@@ -1,6 +1,6 @@
 // filepath: /c:/Users/Eduardo/Documents/GitHub/TodoApp/frontend/myapp/src/screens/TaskDetailScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, SafeAreaView, Alert, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert, Modal } from 'react-native';
 import { updateTask, deleteTask } from '../app/api';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
@@ -82,7 +82,9 @@ const TaskDetailScreen = ({ route, navigation }) => {
         onChangeText={setDescription}
         multiline
       />
-      <Button title="Seleccionar Fecha y Hora" onPress={showDatePicker} />
+      <TouchableOpacity style={styles.dateButton} onPress={showDatePicker}>
+        <Text style={styles.dateButtonText}>Seleccionar Fecha y Hora</Text>
+      </TouchableOpacity>
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="datetime"
@@ -102,16 +104,16 @@ const TaskDetailScreen = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
       <TouchableOpacity
-        style={[styles.buttonActualizar, styles.buttonUpdateAc]}
+        style={[styles.button, styles.buttonUpdate]}
         onPress={() => setUpdateModalVisibility(true)}
       >
-        <Text style={styles.textStyle}>Actualizar Tarea</Text>
+        <Text style={styles.buttonText}>Actualizar Tarea</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.buttonBorrar, styles.buttonDeleteBr]}
+        style={[styles.button, styles.buttonDelete]}
         onPress={() => setDeleteModalVisibility(true)}
       >
-        <Text style={styles.textStyle}>Eliminar Tarea</Text>
+        <Text style={styles.buttonText}>Eliminar Tarea</Text>
       </TouchableOpacity>
 
       {/* Modal de Confirmación de Actualización */}
@@ -126,19 +128,19 @@ const TaskDetailScreen = ({ route, navigation }) => {
             <Text style={styles.modalText}>¿Deseas actualizar esta tarea?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
-                style={[styles.button, styles.buttonClose]}
+                style={[styles.modalButton, styles.buttonClose]}
                 onPress={() => setUpdateModalVisibility(false)}
               >
-                <Text style={styles.textStyle}>Cancelar</Text>
+                <Text style={styles.modalButtonText}>Cancelar</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.button, styles.buttonUpdate]}
+                style={[styles.modalButton, styles.buttonUpdate]}
                 onPress={() => {
                   setUpdateModalVisibility(false);
                   handleUpdateTask();
                 }}
               >
-                <Text style={styles.textStyle}>Actualizar</Text>
+                <Text style={styles.modalButtonText}>Actualizar</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -157,19 +159,19 @@ const TaskDetailScreen = ({ route, navigation }) => {
             <Text style={styles.modalText}>¿Deseas eliminar esta tarea?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
-                style={[styles.button, styles.buttonClose]}
+                style={[styles.modalButton, styles.buttonClose]}
                 onPress={() => setDeleteModalVisibility(false)}
               >
-                <Text style={styles.textStyle}>Cancelar</Text>
+                <Text style={styles.modalButtonText}>Cancelar</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.button, styles.buttonDelete]}
+                style={[styles.modalButton, styles.buttonDelete]}
                 onPress={() => {
                   setDeleteModalVisibility(false);
                   handleDeleteTask();
                 }}
               >
-                <Text style={styles.textStyle}>Eliminar</Text>
+                <Text style={styles.modalButtonText}>Eliminar</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -185,34 +187,53 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: "rgba(8, 57, 125, 0.84)",
   },
   text: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#fff',
   },
   input: {
     width: '100%',
-    padding: 10,
+    padding: 15,
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
+    borderRadius: 10,
     marginBottom: 20,
+    backgroundColor: '#fff',
   },
   textArea: {
     width: '100%',
-    padding: 10,
+    padding: 15,
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
+    borderRadius: 10,
     marginBottom: 20,
     height: 100,
     textAlignVertical: 'top',
+    backgroundColor: '#fff',
+  },
+  dateButton: {
+    width: '100%',
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    marginBottom: 20,
+    backgroundColor: "rgba(236, 213, 10, 0.95)",
+    alignItems: 'center',
+    elevation: 2,
+  },
+  dateButtonText: {
+    color:"rgba(255, 255, 255, 0.95)",
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   selectedDate: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 20,
+    color:"rgba(255, 255, 255, 0.95)",
     marginBottom: 20,
   },
   checkboxContainer: {
@@ -222,6 +243,7 @@ const styles = StyleSheet.create({
   },
   label: {
     marginRight: 10,
+    color: '#fff',
   },
   completedButton: {
     padding: 10,
@@ -238,49 +260,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  buttonActualizar: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-    marginVertical: 10,
-    width: '50%',
-    alignItems: 'center',
-  },
-  buttonUpdateAc: {
-    backgroundColor: '#4CAF50', // Verde para actualizar
-  },
-  buttonBorrar: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-    marginVertical: 10,
-    width: '50%',
-    alignItems: 'center',
-  },
-  buttonDeleteBr: {
-    backgroundColor: '#f44336', // Rojo para eliminar
-  },
   button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-    marginVertical: 10,
-    width: '40%',
+    width: '100%',
+    padding: 15,
+    borderRadius: 10,
     alignItems: 'center',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
+    elevation: 2,
+    marginBottom: 10,
   },
   buttonUpdate: {
-    backgroundColor: '#4CAF50', // Verde para actualizar
+    backgroundColor: '#28a745', // Verde para actualizar
   },
   buttonDelete: {
     backgroundColor: '#f44336', // Rojo para eliminar
   },
-  textStyle: {
-    color: 'white',
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
   modalContainer: {
     flex: 1,
@@ -313,6 +310,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+  },
+  modalButton: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginVertical: 10,
+    width: '40%',
+    alignItems: 'center',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

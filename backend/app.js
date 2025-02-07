@@ -12,9 +12,7 @@ const io = init(server);
 const PORT = 5000;
 
 // Middlewares
-app.use(cors({
-  origin: 'https://edumaldo94.github.io/TodoApp', // Reemplaza <tu-frontend-url> con la URL de tu frontend
-}));
+app.use(cors());
 app.use(express.json());
 
 // Rutas
