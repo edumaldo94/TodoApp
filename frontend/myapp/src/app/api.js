@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
- baseURL: 'https://todoapp2-in5c.onrender.com'
+ baseURL: 'https://todoapp2-in5c.onrender.com/api'
 });
 
 export const getTasks = () => api.get('/tasks');
