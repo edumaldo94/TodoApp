@@ -12,7 +12,7 @@ const getAllTasks = (req, res) => {
     // Convertir las fechas a la zona horaria correcta antes de enviarlas al cliente
     const tasks = results.map(task => ({
       ...task,
-      due_date: moment.tz(task.due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss')
+      due_date: moment.tz(task.due_date).format('YYYY-MM-DD HH:mm:ss')
     }));
     res.json(tasks);
   });
