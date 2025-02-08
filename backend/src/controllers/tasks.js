@@ -4,12 +4,20 @@ const { getIo } = require('../../socket');
 const moment = require('moment');
 
 // Obtener todas las tareas
+const moment = require('moment-timezone');
+
 const getAllTasks = (req, res) => {
-  connection.query('SELECT *, CONVERT_TZ(due_date, "+00:00", "-03:00") AS due_date_local FROM tasks', (err, results) => {
+  connection.query('SELECT * FROM tasks', (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json(results);
+    // Convertir la fecha al huso horario de Buenos Aires antes de enviarla
+    const formattedResults = results.map(task => ({
+      ...task,
+      due_date: moment(task.due_date).tz('America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss')
+    }));
+
+    res.json(formattedResults);
   });
 };
 
@@ -17,8 +25,9 @@ const getAllTasks = (req, res) => {
 // Agregar una nueva tarea
 const addTask = (req, res) => {
   const { title, description, due_date } = req.body;
-  // Convertir la fecha a UTC-3 antes de insertarla
-  const formattedDate = moment(due_date).utcOffset(-3).format('YYYY-MM-DD HH:mm:ss');
+
+  // Convertir la fecha ingresada a Buenos Aires
+  const formattedDate = moment.tz(due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss');
 
   const query = 'INSERT INTO tasks (title, description, due_date) VALUES (?, ?, ?)';
   connection.query(query, [title, description, formattedDate], (err, results) => {
@@ -33,6 +42,7 @@ const addTask = (req, res) => {
     res.json(newTask);
   });
 };
+
 
 // Actualizar una tarea
 const updateTask = (req, res) => {

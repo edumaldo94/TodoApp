@@ -65,8 +65,9 @@ const TaskList = ({ navigation, route }) => {
               <Text style={[styles.taskTitle, item.completed && styles.completedTaskText]}>{item.title}</Text>
               <Text style={[styles.taskDescription, item.completed && styles.completedTaskText]}>{item.description.substring(0, 50)}...</Text>
               <Text style={[styles.taskHora, item.completed && styles.completedTaskText]}>
-  {moment.utc(item.due_date).utcOffset(-3).format('HH:mm')}
+  {moment.utc(item.due_date).tz('America/Argentina/Buenos_Aires').format('HH:mm')}
 </Text>
+
 
             </View>
           </TouchableOpacity>
