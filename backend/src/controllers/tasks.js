@@ -9,13 +9,12 @@ const getAllTasks = (req, res) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    // Convertir la fecha al huso horario de Buenos Aires antes de enviarla
-    const formattedResults = results.map(task => ({
+    // Convertir las fechas a la zona horaria correcta antes de enviarlas al cliente
+    const tasks = results.map(task => ({
       ...task,
-      due_date: moment(task.due_date).tz('America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss')
+      due_date: moment(task.due_date).format('YYYY-MM-DD HH:mm:ss')
     }));
-
-    res.json(formattedResults);
+    res.json(tasks);
   });
 };
 
