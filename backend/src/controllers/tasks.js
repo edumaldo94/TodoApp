@@ -1,7 +1,7 @@
 // filepath: /c:/Users/Eduardo/Documents/GitHub/TodoApp/backend/src/controllers/tasks.js
 const connection = require('../models/db');
-const { getIo } = require('../../socket'); // Importamos `getIo`
-const moment = require('moment-timezone'); // Importamos moment-timezone para manejar zonas horarias
+const { getIo } = require('../../socket');
+const moment = require('moment-timezone');
 
 // Obtener todas las tareas
 const getAllTasks = (req, res) => {
@@ -9,14 +9,19 @@ const getAllTasks = (req, res) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json(results);
+    // Convertir las fechas a la zona horaria correcta antes de enviarlas al cliente
+    const tasks = results.map(task => ({
+      ...task,
+      due_date: moment.tz(task.due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss')
+    }));
+    res.json(tasks);
   });
 };
 
 // Agregar una nueva tarea
 const addTask = (req, res) => {
   const { title, description, due_date } = req.body;
-  const formattedDate = moment.tz(due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss'); // Formateamos la fecha en la zona horaria correcta
+  const formattedDate = moment.tz(due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss');
 
   const query = 'INSERT INTO tasks (title, description, due_date) VALUES (?, ?, ?)';
   connection.query(query, [title, description, formattedDate], (err, results) => {
@@ -25,8 +30,8 @@ const addTask = (req, res) => {
     }
     const newTask = { id: results.insertId, title, description, due_date: formattedDate, completed: false };
 
-    const io = getIo(); // Obtenemos `io` correctamente
-    io.emit('newTask', newTask); // Emitimos el evento
+    const io = getIo();
+    io.emit('newTask', newTask);
 
     res.json(newTask);
   });
@@ -36,15 +41,15 @@ const addTask = (req, res) => {
 const updateTask = (req, res) => {
   const { id } = req.params;
   const { title, description, completed, due_date } = req.body;
-  const formattedDate = moment.tz(due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss'); // Formateamos la fecha en la zona horaria correcta
+  const formattedDate = moment.tz(due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss');
   const query = 'UPDATE tasks SET title = ?, description = ?, completed = ?, due_date = ? WHERE id = ?';
   connection.query(query, [title, description, completed, formattedDate, id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
     const updatedTask = { id, title, description, completed, due_date: formattedDate };
-    const io = getIo(); // Obtenemos `io` correctamente
-    io.emit('updateTask', updatedTask); // Emitimos el evento
+    const io = getIo();
+    io.emit('updateTask', updatedTask);
     res.json(updatedTask);
   });
 };
@@ -57,8 +62,8 @@ const deleteTask = (req, res) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    const io = getIo(); // Obtenemos `io` correctamente
-    io.emit('deleteTask', { id }); // Emitimos el evento
+    const io = getIo();
+    io.emit('deleteTask', { id });
     res.json({ message: 'Tarea eliminada correctamente' });
   });
 };
