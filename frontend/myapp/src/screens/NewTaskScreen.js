@@ -4,6 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Aler
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment-timezone';
 import { addTask } from '../app/api';
+import eventEmitter from '../app/eventEmitter';
 
 const NewTaskScreen = ({ navigation }) => {
   const [title, setTitle] = useState('');
@@ -13,14 +14,21 @@ const NewTaskScreen = ({ navigation }) => {
 
   const handleAddTask = async () => {
     try {
-      // Convertir la fecha a la zona horaria de Buenos Aires
+      // Convertir la fecha a zona horaria Buenos Aires
       const formattedDate = moment(date).tz('America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss');
+      
       await addTask({ title, description, due_date: formattedDate });
+  
       Alert.alert('Tarea añadida', 'La tarea ha sido añadida exitosamente');
+  
       // Limpiar los campos después de añadir la tarea
       setTitle('');
       setDescription('');
       setDate(new Date());
+  
+      // Emitir un evento para refrescar DateTimeScreen
+      eventEmitter.emit('refreshDateTimeScreen');
+  
       // Navegar a la pantalla de lista de tareas
       navigation.navigate('MainTabs', { screen: 'TaskList', params: { refresh: true } });
     } catch (error) {

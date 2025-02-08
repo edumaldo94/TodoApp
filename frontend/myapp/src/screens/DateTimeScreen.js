@@ -5,39 +5,72 @@ import { Calendar } from 'react-native-calendars';
 import { getTasks } from '../app/api';
 import moment from 'moment';
 import io from 'socket.io-client';
+import eventEmitter from '../app/eventEmitter';
 
 const socket = io(process.env.BACKEND_URL);
 
-const DateTimeScreen = ({ navigation }) => {
+const DateTimeScreen = ({ navigation, route }) => {
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [markedDates, setMarkedDates] = useState({});
 
   useEffect(() => {
-    fetchTasks();
+    refresh();
 
     // Escuchar eventos de nuevas tareas
     socket.on('newTask', (newTask) => {
       setTasks((prevTasks) => [newTask, ...prevTasks]);
+      refresh();
     });
 
-    // Limpiar el evento cuando el componente se desmonte
+    // Escuchar eventos de actualización de tareas
+    socket.on('updateTask', (updatedTask) => {
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+      );
+      refresh();
+    });
+
+    // Escuchar eventos de eliminación de tareas
+    socket.on('deleteTask', ({ id }) => {
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+      refresh();
+    });
+
+    // Escuchar el evento personalizado para refrescar la pantalla
+    eventEmitter.on('refreshDateTimeScreen', refresh);
+
+    // Limpiar los eventos cuando el componente se desmonte
     return () => {
       socket.off('newTask');
+      socket.off('updateTask');
+      socket.off('deleteTask');
+      eventEmitter.off('refreshDateTimeScreen', refresh);
     };
   }, []);
+
+  useEffect(() => {
+    if (route.params?.refresh) {
+      refresh();
+    }
+  }, [route.params?.refresh]);
 
   useEffect(() => {
     filterTasksByDate(selectedDate);
     markTaskDates(tasks);
   }, [selectedDate, tasks]);
 
+  const refresh = async () => {
+    await fetchTasks();
+    filterTasksByDate(selectedDate);
+    markTaskDates(tasks);
+  };
+
   const fetchTasks = async () => {
     try {
       const response = await getTasks();
       setTasks(response || []);
-      markTaskDates(response || []);
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
