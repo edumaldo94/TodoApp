@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { getTasks } from '../app/api';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import io from 'socket.io-client';
 
 //const socket = io(process.env.REACT_APP_BACKEND_URL || 'http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
-const socket = io(process.env.REACT_APP_BACKEND_URL);
+const socket = io(process.env.BACKEND_URL);
 const DateTimeScreen = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [tasks, setTasks] = useState([]);
@@ -36,22 +36,22 @@ const DateTimeScreen = ({ navigation }) => {
   const fetchTasks = async () => {
     try {
       const response = await getTasks();
-      setTasks(response.data || []);
-      markTaskDates(response.data || []);
+      setTasks(response || []);
+      markTaskDates(response || []);
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
   };
 
   const filterTasksByDate = (date) => {
-    const filtered = tasks.filter(task => moment(task.due_date).format('YYYY-MM-DD') === date);
+    const filtered = tasks.filter(task => moment.tz(task.due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD') === date);
     setFilteredTasks(filtered);
   };
 
   const markTaskDates = (tasks) => {
     const dates = {};
     tasks.forEach(task => {
-      const date = moment(task.due_date).format('YYYY-MM-DD');
+      const date = moment.tz(task.due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD');
       if (dates[date]) {
         dates[date].marked = true;
       } else {
@@ -67,7 +67,7 @@ const DateTimeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light" />
+      <StatusBar barStyle="light-content" />
       <Text style={styles.text}>Fecha y Hora</Text>
       <Calendar
         onDayPress={handleDayPress}
@@ -106,7 +106,7 @@ const DateTimeScreen = ({ navigation }) => {
             <View style={[styles.taskContainer, item.completed && styles.completedTask]}>
               <Text style={[styles.taskTitle, item.completed && styles.completedTaskText]}>{item.title}</Text>
               <Text style={[styles.taskDescription, item.completed && styles.completedTaskText]}>{item.description.substring(0, 50)}...</Text>
-              <Text style={[styles.taskHora, item.completed && styles.completedTaskText]}>{moment(item.due_date).format('HH:mm')}</Text>
+              <Text style={[styles.taskHora, item.completed && styles.completedTaskText]}>{moment.tz(item.due_date, 'America/Argentina/Buenos_Aires').format('HH:mm')}</Text>
             </View>
           </TouchableOpacity>
         )}

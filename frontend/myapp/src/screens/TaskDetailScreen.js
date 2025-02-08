@@ -3,17 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert, Modal } from 'react-native';
 import { updateTask, deleteTask } from '../app/api';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import io from 'socket.io-client';
 
 //const socket = io(process.env.REACT_APP_BACKEND_URL || 'http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
-const socket = io(process.env.REACT_APP_BACKEND_URL);
+const socket = io(process.env.BACKEND_URL);
 const TaskDetailScreen = ({ route, navigation }) => {
   const { task } = route.params;
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [completed, setCompleted] = useState(task.completed);
-  const [dueDate, setDueDate] = useState(new Date(task.due_date));
+  const [dueDate, setDueDate] = useState(moment.tz(task.due_date, 'America/Argentina/Buenos_Aires').toDate());
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isUpdateModalVisible, setUpdateModalVisibility] = useState(false);
   const [isDeleteModalVisible, setDeleteModalVisibility] = useState(false);
@@ -30,7 +30,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
 
   const handleUpdateTask = async () => {
     try {
-      const formattedDate = moment(dueDate).format('YYYY-MM-DD HH:mm:ss'); // Formateamos la fecha
+      const formattedDate = moment.tz(dueDate, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss'); // Formateamos la fecha en la zona horaria correcta
       const updatedTask = { title, description, completed, due_date: formattedDate };
       await updateTask(task.id, updatedTask);
       socket.emit('updateTask', { id: task.id, ...updatedTask });
@@ -93,7 +93,7 @@ const TaskDetailScreen = ({ route, navigation }) => {
         onCancel={hideDatePicker}
       />
       <Text style={styles.selectedDate}>
-        {`Fecha y Hora seleccionadas: ${moment(dueDate).format('YYYY-MM-DD HH:mm:ss')}`}
+        {`Fecha y Hora seleccionadas: ${moment.tz(dueDate, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss')}`}
       </Text>
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}>Completada:</Text>
