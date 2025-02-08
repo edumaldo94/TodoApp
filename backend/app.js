@@ -1,4 +1,5 @@
 // filepath: /c:/Users/Eduardo/Documents/GitHub/TodoApp/backend/app.js
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
