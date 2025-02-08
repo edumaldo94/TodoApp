@@ -16,9 +16,9 @@ app.use(cors());
 app.use(express.json());
 
 // Rutas
-/*app.get('/', (req, res) => {
+app.get('/', (req, res) => {
   res.send('Bienvenidos');
-});*/
+});
 app.use('/api/tasks', tasksRoutes);
 
 // Manejar conexiones de socket.io
