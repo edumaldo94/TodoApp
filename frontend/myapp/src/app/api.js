@@ -1,5 +1,8 @@
 import axios from 'axios';
-const api = axios.create({
+/*const api = axios.create({
+    baseURL: process.env.REACT_APP_BACKEND_URL || 'http://192.168.0.107:5000/api', // Reemplaza con la URL de tu backend
+  });*/
+  const api = axios.create({
     baseURL: process.env.REACT_APP_BACKEND_URL || 'https://todoapp-burr.onrender.com/api', // Reemplaza con la URL de tu backend
   });
   export const getTasks = async () => {

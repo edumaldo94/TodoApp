@@ -5,8 +5,8 @@ import { getTasks } from '../app/api';
 import io from 'socket.io-client';
 import moment from 'moment';
 
-const socket = io(process.env.REACT_APP_BACKEND_URL || 'http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
-
+//const socket = io(process.env.REACT_APP_BACKEND_URL || 'http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
+const socket = io(process.env.REACT_APP_BACKEND_URL);
 const TaskList = ({ navigation, route }) => {
   const [tasks, setTasks] = useState([]);
 

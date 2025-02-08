@@ -6,8 +6,8 @@ import { getTasks } from '../app/api';
 import moment from 'moment';
 import io from 'socket.io-client';
 
-const socket = io(process.env.REACT_APP_BACKEND_URL || 'http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
-
+//const socket = io(process.env.REACT_APP_BACKEND_URL || 'http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
+const socket = io(process.env.REACT_APP_BACKEND_URL);
 const DateTimeScreen = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [tasks, setTasks] = useState([]);

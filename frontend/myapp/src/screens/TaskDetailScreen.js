@@ -6,8 +6,8 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import io from 'socket.io-client';
 
-const socket = io('http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
-
+//const socket = io(process.env.REACT_APP_BACKEND_URL || 'http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
+const socket = io(process.env.REACT_APP_BACKEND_URL);
 const TaskDetailScreen = ({ route, navigation }) => {
   const { task } = route.params;
   const [title, setTitle] = useState(task.title);
@@ -30,7 +30,8 @@ const TaskDetailScreen = ({ route, navigation }) => {
 
   const handleUpdateTask = async () => {
     try {
-      const updatedTask = { title, description, completed, due_date: dueDate.toISOString() };
+      const formattedDate = moment(dueDate).format('YYYY-MM-DD HH:mm:ss'); // Formateamos la fecha
+      const updatedTask = { title, description, completed, due_date: formattedDate };
       await updateTask(task.id, updatedTask);
       socket.emit('updateTask', { id: task.id, ...updatedTask });
       Alert.alert('Tarea actualizada', 'La tarea ha sido actualizada exitosamente');
