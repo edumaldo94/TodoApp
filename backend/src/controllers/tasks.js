@@ -31,7 +31,7 @@ const addTask = (req, res) => {
 };
 
 // Actualizar una tarea
-/*const updateTask = (req, res) => {
+const updateTask = (req, res) => {
   const { id } = req.params;
   const { title, description, completed, due_date } = req.body;
   const query = 'UPDATE tasks SET title = ?, description = ?, completed = ?, due_date = ? WHERE id = ?';
@@ -44,23 +44,8 @@ const addTask = (req, res) => {
     io.emit('updateTask', updatedTask); // Emitimos el evento
     res.json(updatedTask);
   });
-};*/
-
-const updateTask = (req, res) => {
-  const { id } = req.params;
-  const { title, description, completed, due_date } = req.body;
-  const formattedDate = moment(due_date).format('YYYY-MM-DD HH:mm:ss'); // Formateamos la fecha
-  const query = 'UPDATE tasks SET title = ?, description = ?, completed = ?, due_date = ? WHERE id = ?';
-  connection.query(query, [title, description, completed, formattedDate, id], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    const updatedTask = { id, title, description, completed, due_date: formattedDate };
-    const io = getIo(); // Obtenemos `io` correctamente
-    io.emit('updateTask', updatedTask); // Emitimos el evento
-    res.json(updatedTask);
-  });
 };
+
 // Eliminar una tarea
 const deleteTask = (req, res) => {
   const { id } = req.params;
