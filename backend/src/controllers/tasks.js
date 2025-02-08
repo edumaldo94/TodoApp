@@ -1,9 +1,7 @@
 // filepath: /c:/Users/Eduardo/Documents/GitHub/TodoApp/backend/src/controllers/tasks.js
 const connection = require('../models/db');
 const { getIo } = require('../../socket');
-const moment = require('moment');
 
-// Obtener todas las tareas
 const moment = require('moment-timezone');
 
 const getAllTasks = (req, res) => {
