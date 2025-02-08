@@ -1,7 +1,7 @@
 // filepath: /c:/Users/Eduardo/Documents/GitHub/TodoApp/backend/src/controllers/tasks.js
 const connection = require('../models/db');
 const { getIo } = require('../../socket');
-const moment = require('moment-timezone');
+const moment = require('moment');
 
 // Obtener todas las tareas
 const getAllTasks = (req, res) => {
@@ -17,7 +17,7 @@ const getAllTasks = (req, res) => {
 // Agregar una nueva tarea
 const addTask = (req, res) => {
   const { title, description, due_date } = req.body;
-  const formattedDate = moment.tz(due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss');
+  const formattedDate = moment(due_date).format('YYYY-MM-DD HH:mm:ss');
 
   const query = 'INSERT INTO tasks (title, description, due_date) VALUES (?, ?, ?)';
   connection.query(query, [title, description, formattedDate], (err, results) => {
@@ -37,7 +37,7 @@ const addTask = (req, res) => {
 const updateTask = (req, res) => {
   const { id } = req.params;
   const { title, description, completed, due_date } = req.body;
-  const formattedDate = moment.tz(due_date, 'America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss');
+  const formattedDate = moment(due_date).format('YYYY-MM-DD HH:mm:ss');
   const query = 'UPDATE tasks SET title = ?, description = ?, completed = ?, due_date = ? WHERE id = ?';
   connection.query(query, [title, description, completed, formattedDate, id], (err, results) => {
     if (err) {
