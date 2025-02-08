@@ -5,19 +5,20 @@ const moment = require('moment');
 
 // Obtener todas las tareas
 const getAllTasks = (req, res) => {
-  connection.query('SELECT * FROM tasks', (err, results) => {
+  connection.query('SELECT *, CONVERT_TZ(due_date, "+00:00", "-03:00") AS due_date_local FROM tasks', (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    // No convertir las fechas a la zona horaria, enviarlas tal como están
     res.json(results);
   });
 };
 
+
 // Agregar una nueva tarea
 const addTask = (req, res) => {
   const { title, description, due_date } = req.body;
-  const formattedDate = moment(due_date).format('YYYY-MM-DD HH:mm:ss');
+  // Convertir la fecha a UTC-3 antes de insertarla
+  const formattedDate = moment(due_date).utcOffset(-3).format('YYYY-MM-DD HH:mm:ss');
 
   const query = 'INSERT INTO tasks (title, description, due_date) VALUES (?, ?, ?)';
   connection.query(query, [title, description, formattedDate], (err, results) => {
