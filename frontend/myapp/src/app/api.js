@@ -14,7 +14,6 @@ export const getTasks = async () => {
     throw error;
   }
 };
-
 export const addTask = async (task) => {
   try {
     const response = await api.post('/tasks', task);
