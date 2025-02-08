@@ -9,12 +9,8 @@ const getAllTasks = (req, res) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    // Convertir las fechas a la zona horaria correcta antes de enviarlas al cliente
-    const tasks = results.map(task => ({
-      ...task,
-      due_date: moment.tz(task.due_date).format('YYYY-MM-DD HH:mm:ss')
-    }));
-    res.json(tasks);
+    // No convertir las fechas a la zona horaria, enviarlas tal como están
+    res.json(results);
   });
 };
 
