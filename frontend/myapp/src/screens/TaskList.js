@@ -4,7 +4,8 @@ import { View, Text, FlatList, StyleSheet, SafeAreaView, StatusBar, TouchableOpa
 import { getTasks } from '../app/api';
 import io from 'socket.io-client';
 import moment from 'moment';
-const socket = io('http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
+
+const socket = io(process.env.REACT_APP_BACKEND_URL || 'http://192.168.0.107:5000'); // Reemplaza <TU_DIRECCION_IP> con la dirección IP de tu máquina de desarrollo
 
 const TaskList = ({ navigation, route }) => {
   const [tasks, setTasks] = useState([]);
@@ -46,47 +47,25 @@ const TaskList = ({ navigation, route }) => {
   const fetchTasks = async () => {
     try {
       const response = await getTasks();
-      setTasks(response.data);
+      setTasks(response || []);
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
   };
 
-  const filterTasksByDate = (date) => {
-    const filtered = tasks.filter(task => moment(task.due_date).format('YYYY-MM-DD') === date);
-    setFilteredTasks(filtered);
-  };
-
-  const markTaskDates = (tasks) => {
-    const dates = {};
-    tasks.forEach(task => {
-      const date = moment(task.due_date).format('YYYY-MM-DD');
-      if (dates[date]) {
-        dates[date].marked = true;
-      } else {
-        dates[date] = { marked: true };
-      }
-    });
-    setMarkedDates(dates);
-  };
-
-  const handleDayPress = (day) => {
-    setSelectedDate(day.dateString);
-  };
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light" />
+      <StatusBar barStyle="light-content" />
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigation.navigate('TaskDetail', { task: item })}>
-           <View style={[styles.taskContainer, item.completed && styles.completedTask]}>
-                        <Text style={[styles.taskTitle, item.completed && styles.completedTaskText]}>{item.title}</Text>
-                        <Text style={[styles.taskDescription, item.completed && styles.completedTaskText]}>{item.description.substring(0, 50)}...</Text>
-                        <Text style={[styles.taskHora, item.completed && styles.completedTaskText]}>{moment(item.due_date).format('HH:mm')}</Text>
-                      </View>
-
+            <View style={[styles.taskContainer, item.completed && styles.completedTask]}>
+              <Text style={[styles.taskTitle, item.completed && styles.completedTaskText]}>{item.title}</Text>
+              <Text style={[styles.taskDescription, item.completed && styles.completedTaskText]}>{item.description.substring(0, 50)}...</Text>
+              <Text style={[styles.taskHora, item.completed && styles.completedTaskText]}>{moment(item.due_date).format('HH:mm')}</Text>
+            </View>
           </TouchableOpacity>
         )}
       />
@@ -117,7 +96,6 @@ const styles = StyleSheet.create({
   completedTaskText: {
     color: "rgb(22, 59, 6)", // Color de texto para tareas completadas
   },
-
   taskTitle: {
     fontSize: 18,
     fontWeight: 'bold',
